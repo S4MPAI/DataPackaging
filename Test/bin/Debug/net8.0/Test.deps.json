@@ -1,0 +1,63 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "Test/1.0.0": {
+        "dependencies": {
+          "DataPackaging.Logic": "1.0.0",
+          "System.Text.Encoding.CodePages": "9.0.0-rc.2.24473.5"
+        },
+        "runtime": {
+          "Test.dll": {}
+        }
+      },
+      "System.Text.Encoding.CodePages/9.0.0-rc.2.24473.5": {
+        "runtime": {
+          "lib/net8.0/System.Text.Encoding.CodePages.dll": {
+            "assemblyVersion": "9.0.0.0",
+            "fileVersion": "9.0.24.47305"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/win/lib/net8.0/System.Text.Encoding.CodePages.dll": {
+            "rid": "win",
+            "assetType": "runtime",
+            "assemblyVersion": "9.0.0.0",
+            "fileVersion": "9.0.24.47305"
+          }
+        }
+      },
+      "DataPackaging.Logic/1.0.0": {
+        "runtime": {
+          "DataPackaging.Logic.dll": {
+            "assemblyVersion": "1.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Test/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "System.Text.Encoding.CodePages/9.0.0-rc.2.24473.5": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-H1e56lFcgmKStcHlfRZQHn0Ck4Lb2BQIMbTrIq+5CT3LLn8uyL9R7kSM0RtYaIoOl5bD5NvGXjNQvReNY1siAA==",
+      "path": "system.text.encoding.codepages/9.0.0-rc.2.24473.5",
+      "hashPath": "system.text.encoding.codepages.9.0.0-rc.2.24473.5.nupkg.sha512"
+    },
+    "DataPackaging.Logic/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
