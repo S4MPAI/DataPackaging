@@ -11,6 +11,8 @@ public class BitWriter
         stream.Seek(0, SeekOrigin.Begin);
     }
 
+    public void WriteBit(bool bit) => WriteBits([bit ? 1 : 0], 1);
+    
     public void WriteBits(List<int> bits, byte bitsCount)
     {
         if (bits.Count == 0)

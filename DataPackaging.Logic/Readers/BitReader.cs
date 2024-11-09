@@ -11,6 +11,16 @@ public class BitReader
         this.stream = stream;
         stream.Seek(0, SeekOrigin.Begin);
     }
+
+    public int ReadBit()
+    {
+        var bits = ReadBits(1, 1);
+        
+        if (bits.Count == 0)
+            return -1;
+        
+        return bits[0];
+    }
     
     public List<int> ReadBits(byte bitsLength, int length)
     {
