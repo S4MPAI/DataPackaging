@@ -18,3 +18,4 @@ C:\proga\encodingAndEncryption\DataPackaging\Test\obj\Debug\net8.0\Test.genrunti
 C:\proga\encodingAndEncryption\DataPackaging\Test\obj\Debug\net8.0\ref\Test.dll
 C:\proga\encodingAndEncryption\DataPackaging\Test\bin\Debug\net8.0\System.Text.Encoding.CodePages.dll
 C:\proga\encodingAndEncryption\DataPackaging\Test\bin\Debug\net8.0\runtimes\win\lib\net8.0\System.Text.Encoding.CodePages.dll
+C:\proga\encodingAndEncryption\DataPackaging\Test\obj\Debug\net8.0\Test.sourcelink.json

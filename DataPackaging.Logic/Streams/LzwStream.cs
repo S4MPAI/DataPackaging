@@ -5,7 +5,7 @@ using DataPackaging.Logic.Writers;
 
 namespace DataPackaging.Logic.Streams;
 
-public class LzwStream
+public class LzwStream : IPackagingStream
 {
     private Dictionary<string, int> codingMap;
     private Dictionary<int, string> decodingMap;
@@ -171,8 +171,5 @@ public class LzwStream
         return (byte)Math.Ceiling(Math.Log2(mapLength));
     }
 
-    private static string GetCharFromBuffer(byte[] buffer, int start)
-    {
-        return encoding.GetString(buffer.Skip(start).Take(1).ToArray());
-    }
+    private static string GetCharFromBuffer(byte[] buffer, int start) => encoding.GetString(new[]{buffer[start]});
 }

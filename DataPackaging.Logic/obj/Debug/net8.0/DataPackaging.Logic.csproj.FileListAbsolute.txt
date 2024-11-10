@@ -9,3 +9,4 @@ C:\proga\encodingAndEncryption\DataPackaging\DataPackaging.Logic\obj\Debug\net8.
 C:\proga\encodingAndEncryption\DataPackaging\DataPackaging.Logic\obj\Debug\net8.0\refint\DataPackaging.Logic.dll
 C:\proga\encodingAndEncryption\DataPackaging\DataPackaging.Logic\obj\Debug\net8.0\DataPackaging.Logic.pdb
 C:\proga\encodingAndEncryption\DataPackaging\DataPackaging.Logic\obj\Debug\net8.0\ref\DataPackaging.Logic.dll
+C:\proga\encodingAndEncryption\DataPackaging\DataPackaging.Logic\obj\Debug\net8.0\DataPackaging.Logic.sourcelink.json
