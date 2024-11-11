@@ -10,7 +10,7 @@ public class LzssStream : IPackagingStream
     private Stream compressedStream;
     
     private const int bufferSize = 81920;
-    private const int stringBufferSize = 16;
+    private const int stringBufferSize = 8;
     private static readonly Encoding encoding = Encoding.GetEncoding(1251);
     
     public LzssStream(Stream compressedStream, Stream decompressedStream)
@@ -57,22 +57,16 @@ public class LzssStream : IPackagingStream
                 } while (currentIndex >= 0 && localIndex < count);
                 i += length == 0 ? 0 : length - 1;
                 
-                if (i < count && currentIndex >= 0)
+                if (i == count - 1 && currentIndex >= 0)
                     break;
                 
-                if (offset >= 0 && length > 1)
+                if (offset >= 0 && (length > 1 || (length == 1 && stringBufferSize <= 8)))
                 {
-                    bitWriter.WriteBit(true);
-                    var bits = new List<int>{offset, length};
-                    bitWriter.WriteBits(bits, FindGroupBitLength());
-                    MoveStringBuffer(stringBuffer, currentSubstring.ToString());
+                    WriteSubstring(bitWriter, offset, stringBuffer, currentSubstring.ToString().Remove(currentSubstring.Length - 1));
                 }
                 else
                 {
-                    bitWriter.WriteBit(false);
-                    var bits = new List<int>{ buffer[i] };
-                    bitWriter.WriteBits(bits, 8);
-                    MoveStringBuffer(stringBuffer, currentSubstring.ToString()[0]);
+                    WriteLetter(bitWriter, buffer[i], stringBuffer);
                 }
                 
                 length = 0;
@@ -82,11 +76,65 @@ public class LzssStream : IPackagingStream
                 currentSubstring.Clear();
             }
         }
+        
+        if (currentSubstring.Length > 0)
+            WriteSubstring(bitWriter, currentIndex, stringBuffer, currentSubstring.ToString());
+    }
+
+    private void WriteLetter(BitWriter bitWriter, byte letter, char[] stringBuffer)
+    {
+        var letterChar = encoding.GetString([letter]);
+        bitWriter.WriteBit(false);
+        var bits = new List<int>{ letter };
+        bitWriter.WriteBits(bits, 8);
+        MoveStringBuffer(stringBuffer, letterChar);
+    }
+
+    private void WriteSubstring(BitWriter bitWriter, int offset, char[] stringBuffer,
+        string currentSubstring)
+    {
+        bitWriter.WriteBit(true);
+        var bits = new List<int>{offset, currentSubstring.Length};
+        bitWriter.WriteBits(bits, FindGroupBitLength());
+        MoveStringBuffer(stringBuffer, currentSubstring);
     }
 
     public void Decode()
     {
+        decompressedStream.Seek(0, SeekOrigin.Begin);
         var bitReader = new BitReader(compressedStream);
+        var stringBuffer = GenerateNewStringBuffer();
+        var bufferBuilder = new StringBuilder(bufferSize);
+
+        while (true)
+        {
+            var symbolType = bitReader.ReadBit();
+            
+            if (symbolType < 0)
+                break;
+
+            if (symbolType == 1)
+            {
+                var bits = bitReader.ReadBits(FindGroupBitLength(), 2);
+                var dictionary = new string(stringBuffer);
+                var word = dictionary.Substring(bits[0], bits[1]);
+                bufferBuilder.Append(word);
+                MoveStringBuffer(stringBuffer, word);
+            }
+            else
+            {
+                var bits = bitReader.ReadBits(8, 1);
+                var letter = encoding.GetString([(byte)bits[0]]);
+                bufferBuilder.Append(letter);
+                MoveStringBuffer(stringBuffer, letter[0]);
+            }
+
+            if (bufferBuilder.Length >= bufferSize)
+                decompressedStream.Write(encoding.GetBytes(bufferBuilder.ToString()));
+        }
+
+        if (bufferBuilder.Length > 0)
+            decompressedStream.Write(encoding.GetBytes(bufferBuilder.ToString()));
     }
 
     private char[] GenerateNewStringBuffer()
@@ -101,7 +149,7 @@ public class LzssStream : IPackagingStream
     
     private void MoveStringBuffer(char[] stringBuffer, string substring)
     {
-        var shift = substring.Length - 1;
+        var shift = substring.Length;
 
         for (var i = shift; i < stringBufferSize; i++)
             stringBuffer[i - shift] = stringBuffer[i];
@@ -119,7 +167,7 @@ public class LzssStream : IPackagingStream
         stringBuffer[^1] = letter;
     }
     
-    private byte FindGroupBitLength() => (byte)(Math.Ceiling(Math.Log2(stringBufferSize)) - 1);
+    private byte FindGroupBitLength() => (byte)(Math.Ceiling(Math.Log2(stringBufferSize + 1)) - 1);
 
-    private static string GetCharFromBuffer(byte[] buffer, int start) => encoding.GetString(new[]{buffer[start]});
+    private static string GetCharFromBuffer(byte[] buffer, int start) => encoding.GetString([buffer[start]]);
 }

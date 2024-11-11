@@ -1,5 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
+using System;
+using System.IO;
 using System.IO.Compression;
 using System.Text;
 using DataPackaging.Logic.Streams;
@@ -11,7 +13,7 @@ byte1 = (byte)((byte)(byte1 << 3) >> 3);
 
 var encoding = Encoding.GetEncoding(1251);
 
-var b = encoding.GetBytes("sid_eastman_clumsily_teases_sea_sick_seals");
+var b = encoding.GetBytes("КРАСНАЯ КРАСКА");
 var decompressedStream = new MemoryStream(b);
 var compressedStream = new MemoryStream();
 var newDecompressedStream = new MemoryStream();

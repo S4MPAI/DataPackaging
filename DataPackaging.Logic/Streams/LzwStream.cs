@@ -59,6 +59,7 @@ public class LzwStream : IPackagingStream
 
     public void Decode()
     {
+        decompressedStream.Seek(0, SeekOrigin.Begin);
         var bitReader = new BitReader(compressedStream);
         decodingMap = startSubstringsMap.ToDictionary(k => k.Value, v => v.Key);
         var stringBuilder = new StringBuilder();
@@ -66,8 +67,9 @@ public class LzwStream : IPackagingStream
         
         var bitsLength = FindGroupBitLength(decodingMap.Count + 1);
         var length = (int)Math.Pow(2, bitsLength) - decodingMap.Count;
-        
-        while (true)
+
+        var isStop = false;
+        while (!isStop)
         {
             var bits = bitReader.ReadBits(bitsLength, length);
             
@@ -76,6 +78,12 @@ public class LzwStream : IPackagingStream
 
             foreach (var wordNumber in bits)
             {
+                if (wordNumber == 0)
+                {
+                    isStop = true;
+                    break;
+                }
+                
                 var isNotAdded = true;
 
                 if (wordNumber == decodingMap.Count + 1)

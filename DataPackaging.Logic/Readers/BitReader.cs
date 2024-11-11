@@ -28,12 +28,13 @@ public class BitReader
             return new();
         
         var result = new List<int>();
-        var bufferLength = (int)Math.Ceiling(bitsLength * length / 8.0);
+        var neededBitsCount = (bitsLength * length - remainingBitsInByte) / 8.0;
+        var bufferLength = (int)Math.Ceiling(neededBitsCount > 0 ? neededBitsCount : 0);
         var buffer = new byte[bufferLength];
         var count = stream.Read(buffer, 0, bufferLength);
         var currentBufferIndex = 0;
         
-        if (count == 0)
+        if (count == 0 && bufferLength > 0)
             return result;
 
         if (remainingBitsInByte == 0)
@@ -48,8 +49,6 @@ public class BitReader
         {
             var bits = GetBits(buffer, count, ref currentBufferIndex, bitsLength);
             
-            if (bits == 0)
-                break;
             result.Add(bits);
         }
         
