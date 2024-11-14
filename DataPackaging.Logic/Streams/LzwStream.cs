@@ -9,22 +9,20 @@ public class LzwStream : IPackagingStream
 {
     private Dictionary<string, int> codingMap;
     private Dictionary<int, string> decodingMap;
-    private readonly Dictionary<string, int> startSubstringsMap;
+    private Dictionary<string, int> startSubstringsMap;
     private Stream decompressedStream;
     private Stream compressedStream;
-    private readonly CompressionMode mode;
     
     private string wordInMap = string.Empty;
     
     private const int bufferSize = 81920;
     private static readonly Encoding encoding = Encoding.GetEncoding(1251);
     
-    public LzwStream(Stream compressedStream, Stream decompressedStream, CompressionMode mode)
+    public LzwStream(Stream compressedStream, Stream decompressedStream)
     {
         startSubstringsMap = GenerateStartSubstringMap(decompressedStream);
         this.decompressedStream = decompressedStream;
         this.compressedStream = compressedStream;
-        this.mode = mode;
     }
 
     private static Dictionary<string, int> GenerateStartSubstringMap(Stream decompressedStream)
@@ -54,6 +52,7 @@ public class LzwStream : IPackagingStream
 
     public void ChangeDecompressedStream(Stream decompressedStream)
     {
+        this.decompressedStream.Dispose();
         this.decompressedStream = decompressedStream;
     }
 
@@ -95,6 +94,11 @@ public class LzwStream : IPackagingStream
                 
                 var word = decodingMap[wordNumber];
                 stringBuilder.Append(word);
+
+                if (decodingMap.Count == 260)
+                {
+                    
+                }
                 
                 if (codedWord != "" && isNotAdded)
                 {
@@ -120,6 +124,8 @@ public class LzwStream : IPackagingStream
             var buffer = encoding.GetBytes(stringBuilder.ToString());
             decompressedStream.Write(buffer, 0, buffer.Length);
         }
+        
+        decompressedStream.Close();
     }
 
     public void Encode()
@@ -153,6 +159,11 @@ public class LzwStream : IPackagingStream
                     var c = GetCharFromBuffer(buffer, i);
                     checkingStringBuilder.Append(c);
                     continue;
+                }
+                
+                if (codingMap.Count == 260)
+                {
+                    
                 }
                 
                 writeBuffer.Add(codingMap[wordInMap]);

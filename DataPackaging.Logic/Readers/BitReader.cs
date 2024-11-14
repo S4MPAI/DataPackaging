@@ -64,8 +64,8 @@ public class BitReader
             bits |= currentByte;
             bitsCount -= remainingBitsInByte;
             bits <<= bitsCount;
-            remainingBitsInByte = 8;
-            currentByte = buffer[currentBufferIndex];
+            remainingBitsInByte = (byte)(currentBufferIndex == count ? 0 : 8);
+            currentByte = currentBufferIndex == count ? (byte)0 : buffer[currentBufferIndex];
             currentBufferIndex++;
         }
 

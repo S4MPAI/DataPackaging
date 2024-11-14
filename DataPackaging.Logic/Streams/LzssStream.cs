@@ -124,17 +124,22 @@ public class LzssStream : IPackagingStream
             else
             {
                 var bits = bitReader.ReadBits(8, 1);
+                
+                if (bits.Count == 0)
+                    break;
+                
                 var letter = encoding.GetString([(byte)bits[0]]);
                 bufferBuilder.Append(letter);
                 MoveStringBuffer(stringBuffer, letter[0]);
             }
 
             if (bufferBuilder.Length >= bufferSize)
-                decompressedStream.Write(encoding.GetBytes(bufferBuilder.ToString()));
+                decompressedStream.Write(encoding.GetBytes(bufferBuilder.ToString()), 0, bufferBuilder.Length);
         }
 
         if (bufferBuilder.Length > 0)
-            decompressedStream.Write(encoding.GetBytes(bufferBuilder.ToString()));
+            decompressedStream.Write(encoding.GetBytes(bufferBuilder.ToString()), 0, bufferBuilder.Length);
+        decompressedStream.Close();
     }
 
     private char[] GenerateNewStringBuffer()
